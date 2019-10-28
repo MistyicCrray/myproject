@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta name="viewport" content="width=device-width" />
+<meta charset="UTF-8" />
+<title>WebSocket客户端</title>
+</head>
+
+<body>
+	<div>
+		<ul id="messageInfo">
+		</ul>
+	</div>
+	<div>
+		<input type="text" id="userId"/>
+		<input type="text" id="message" /> 
+		<input type="button" id="btnConnection" value="连接" /> 
+		<input type="button" id="btnClose" value="关闭" /> 
+		<input type="button" id="btnSend" value="发送" />
+	</div>
+	<script src="js/jquery-1.11.1.min.js"></script>
+
+	<script type="text/javascript">
+		$(function() {
+			var socket;
+			if (typeof (WebSocket) == "undefined") {
+				alert("您的浏览器不支持WebSocket");
+				return;
+			}
+
+			$("#btnConnection").click(function() {
+								//实现化WebSocket对象，指定要连接的服务器地址与端口
+								socket = new WebSocket("ws://localhost:8080/WebSocketServer/websocket/" + document.getElementById("userId").value);
+								//打开事件
+								socket.onopen = function() {
+									console.info('张三');
+								};
+								//获得消息事件
+								socket.onmessage = function(msg) {
+									/* alert(msg.data); */
+									var table = document
+											.getElementById("messageInfo");
+									var li = document.createElement("li");
+									li.innerText = msg.data;
+									table.append(li);
+								};
+								//关闭事件
+								socket.onclose = function() {
+									// alert("Socket已关闭");
+									var table = document
+											.getElementById("messageInfo");
+									var li = document.createElement("li");
+									li.innerText = "你与服务器断开了连接";
+									table.append(li);
+								};
+								//发生了错误事件
+								socket.onerror = function() {
+									alert("发生了错误");
+								};
+							});
+
+			$("#btnSend").click(function() {
+				socket.send(document.getElementById('message').value + "-" + document.getElementById("userId").value);
+			});
+
+			$("#btnClose").click(function() {
+				socket.close();
+			});
+			// 页面关闭、刷新
+			window.onbeforeunload = function(event) {
+				socket.close();
+			};
+		});
+	</script>
+</body>
+
+</html>
