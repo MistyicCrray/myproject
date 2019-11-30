@@ -49,8 +49,8 @@ public class WebSocketService {
 	public void onOpen(@PathParam("username") String username, Session session)
 			throws UnsupportedEncodingException {
 		this.session = session;
+		// 解决乱码问题
 		String decode = new String(username.getBytes("ISO8859-1"), "utf-8");
-		System.out.println(decode);
 		this.username = decode;
 		User user = new User();
 		user.setUsername(decode);
